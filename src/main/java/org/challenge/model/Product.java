@@ -13,6 +13,6 @@ public class Product {
     private List<Integer> listQty = new ArrayList<>();
     private List<Integer> listHarga = new ArrayList<>();
 
-    private String topLine= "==========================";
-    private String underline = "==========================\n";
+    private final String topLine= "==========================";
+    private final String underline = "==========================\n";
 }

@@ -7,15 +7,21 @@ import java.io.*;
 import java.util.*;
 
 public class ProductServiceImpl implements ProductService{
-
     Product product = new Product();
     Scanner inputScanner = new Scanner(System.in);
 
+    // Konstruktor untuk menginisialisasi produk dari repositori
     public ProductServiceImpl(ProductRepository productRepository) {
+        initializeProduct(productRepository);
+    }
+
+    // Metode untuk menginisialisasi produk dari repositori
+    private void initializeProduct(ProductRepository productRepository) {
         product.setListMenu(Arrays.asList(productRepository.getDataMenu()));
         product.setListPrice(Arrays.asList(productRepository.getDataPrice()));
     }
 
+    // Menampilkan header menu
     @Override
     public void dataMenu() {
         for (int i = 0; i < product.getListMenu().size(); i++) {
@@ -76,6 +82,7 @@ public class ProductServiceImpl implements ProductService{
         }
     }
 
+    // Menampilkan pesanan dan harga
     @Override
     public void listOrder(int resultsOrder) {
         System.out.println(product.getTopLine());
@@ -108,11 +115,13 @@ public class ProductServiceImpl implements ProductService{
         }
     }
 
+    // Menambahkan pesanan ke daftar
     @Override
     public void listBuy(String getSelect) {
         product.getListSelect().add(getSelect);
     }
 
+    // Menambahkan jumlah harga pesanan
     @Override
     public void listQty(int result, int select) {
         int i = result * product.getListPrice().get(select);
@@ -141,6 +150,7 @@ public class ProductServiceImpl implements ProductService{
     public void confirmation() {
         validConfirm();
 
+        // Menampilkan konfirmasi dan rincian pembayaran
         System.out.println(product.getTopLine());
         System.out.println("Konfirmasi & Pembayaran");
         System.out.println(product.getUnderline());
@@ -160,6 +170,7 @@ public class ProductServiceImpl implements ProductService{
         processConfirm();
     }
 
+    // Memeriksa apakah ada pesanan yang dipilih sebelum konfirmasi
     @Override
     public void validConfirm() {
         if (product.getListSelect().isEmpty() && product.getListQty().isEmpty() && product.getListHarga().isEmpty()){
@@ -176,6 +187,7 @@ public class ProductServiceImpl implements ProductService{
         }
     }
 
+    // Menghitung total nilai dari daftar integer
     @Override
     public int dataAmount(List<Integer> values) {
         int total = 0;
@@ -209,6 +221,7 @@ public class ProductServiceImpl implements ProductService{
         }
     }
 
+    // Menyiapkan data pembayaran
     @Override
     public void payment() {
         StringBuilder data = new StringBuilder();
@@ -245,8 +258,8 @@ public class ProductServiceImpl implements ProductService{
 
         String locFile = "D:\\Aplication\\Running\\java\\BE_JAVA\\Binar\\BinarChallenge\\Challenge2\\src\\main\\resources\\";
 
+        // Menulis data ke file dan menampilkan isi file yang telah ditulis
         writeFile(locFile+result+".txt", data.toString());
-        // Membaca dan menampilkan isi file yang telah ditulis
         readFile(locFile+result+".txt");
     }
 
@@ -289,6 +302,7 @@ public class ProductServiceImpl implements ProductService{
         }
     }
 
+    // Mengformat harga menjadi string dengan pemisah ribuan
     @Override
     public String priceFormatted(int data) {
         return String.format("%,d", data);
