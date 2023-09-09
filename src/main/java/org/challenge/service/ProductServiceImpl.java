@@ -8,7 +8,7 @@ import java.util.*;
 
 public class ProductServiceImpl implements ProductService{
     Product product = new Product();
-    Scanner inputScanner = new Scanner(System.in);
+    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
 
     // Konstruktor untuk menginisialisasi produk dari repositori
     public ProductServiceImpl(ProductRepository productRepository) {
@@ -42,15 +42,14 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public void validMenu() {
+    public void validMenu() throws IOException {
         System.out.print("Apakah Anda ingin keluar? (y/n): ");
-        String input = inputScanner.nextLine().toLowerCase();
+        String inputClose = reader.readLine().toLowerCase();
 
-        if (input.equals("y")) {
+        if (inputClose.equals("y")) {
             System.out.println("Terima kasih! Program keluar.");
-            inputScanner.close();
             System.exit(0);
-        } else if (input.equals("n")) {
+        } else if (inputClose.equals("n")) {
             System.out.println("Silahkan memilih menu yang tersedia diatas!");
             processMenu();
         } else {
@@ -63,20 +62,19 @@ public class ProductServiceImpl implements ProductService{
     public void processMenu(){
         try {
             System.out.print("=> ");
-            int result = inputScanner.nextInt();
+            String inputMenu = reader.readLine();
+            int result = Integer.parseInt(inputMenu);
 
             if (result >= 1 && result <= product.getListMenu().size()) {
                 listOrder(result - 1);
             } else if (result == 99) {
                 confirmation();
             } else if (result == 0) {
-                inputScanner.nextLine();
                 validMenu();
             } else {
-                throw new InputMismatchException();
+                throw new Exception();
             }
-        } catch (InputMismatchException e) {
-            inputScanner.nextLine();
+        } catch (Exception e) {
             System.out.println("Input tidak valid!");
             processMenu();
         }
@@ -97,19 +95,18 @@ public class ProductServiceImpl implements ProductService{
     @Override
     public void processListOrder(int order) {
         try {
-            inputScanner.nextLine();
             System.out.print("qty => ");
-            int result = inputScanner.nextInt();
+            String inputLiOr = reader.readLine();
+            int result = Integer.parseInt(inputLiOr);
             if (result == 0) {
                 processMenu();
             } else {
                 listBuy(product.getListMenu().get(order));
                 product.getListQty().add(result);
                 listQty(result, order);
-                inputScanner.nextLine();
                 reorders();
             }
-        } catch (InputMismatchException e) {
+        } catch (IOException e) {
             System.out.println("Input tidak valid!");
             processListOrder(order);
         }
@@ -129,15 +126,15 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public void reorders() {
+    public void reorders() throws IOException {
         System.out.print("Apakah Anda ingin mesan lagi? (y/n): ");
-        String input = inputScanner.nextLine().toLowerCase();
+        String inputReorder = reader.readLine().toLowerCase();
 
-        if (input.equals("y")) {
+        if (inputReorder.equals("y")) {
             System.out.println("Silahkan memilih menu yang tersedia!");
             showMenu();
             processMenu();
-        } else if (input.equals("n")) {
+        } else if (inputReorder.equals("n")) {
             System.out.println("Silahkan melanjutkan pembayaran!");
             confirmation();
         } else {
@@ -201,29 +198,27 @@ public class ProductServiceImpl implements ProductService{
     public void processConfirm() {
         try {
             System.out.print("=> ");
-            int result = inputScanner.nextInt();
+            String inputConfirm = reader.readLine();
+            int result = Integer.parseInt(inputConfirm);
             if (result == 0) {
-                inputScanner.close();
                 System.exit(0);
             } else if (result == 1) {
                 payment();
             } else if (result == 2) {
-                inputScanner.nextLine();
                 reorders();
             } else  {
                 System.out.println("Gagal, silahkan pilih ulang");
                 confirmation();
             }
-        } catch (InputMismatchException e) {
+        } catch (IOException e) {
             System.out.println("Input tidak valid. Masukkan angka!");
-            inputScanner.nextLine();
             processConfirm();
         }
     }
 
     // Menyiapkan data pembayaran
     @Override
-    public void payment() {
+    public void payment() throws IOException {
         StringBuilder data = new StringBuilder();
         data.append("================================\n");
         data.append("BinarFud\n");
@@ -251,10 +246,9 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public void outputPayment(StringBuilder data) {
-        inputScanner.nextLine();
+    public void outputPayment(StringBuilder data) throws IOException {
         System.out.print("Masukkan nama file => ");
-        String result = inputScanner.nextLine();
+        String result = reader.readLine();
 
         String locFile = "D:\\Aplication\\Running\\java\\BE_JAVA\\Binar\\BinarChallenge\\Challenge2\\src\\main\\resources\\";
 
