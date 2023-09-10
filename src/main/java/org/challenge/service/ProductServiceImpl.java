@@ -4,7 +4,8 @@ import org.challenge.model.Product;
 import org.challenge.repository.ProductRepository;
 
 import java.io.*;
-import java.util.*;
+import java.util.Arrays;
+import java.util.List;
 
 public class ProductServiceImpl implements ProductService{
     Product product = new Product();
@@ -59,7 +60,7 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public void processMenu(){
+    public void processMenu() {
         try {
             System.out.print("=> ");
             String inputMenu = reader.readLine();
@@ -72,7 +73,7 @@ public class ProductServiceImpl implements ProductService{
             } else if (result == 0) {
                 validMenu();
             } else {
-                throw new Exception();
+                throw new IOException();
             }
         } catch (Exception e) {
             System.out.println("Input tidak valid!");
@@ -99,6 +100,7 @@ public class ProductServiceImpl implements ProductService{
             String inputLiOr = reader.readLine();
             int result = Integer.parseInt(inputLiOr);
             if (result == 0) {
+                showMenu();
                 processMenu();
             } else {
                 listBuy(product.getListMenu().get(order));
@@ -106,7 +108,7 @@ public class ProductServiceImpl implements ProductService{
                 listQty(result, order);
                 reorders();
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println("Input tidak valid!");
             processListOrder(order);
         }
@@ -210,7 +212,7 @@ public class ProductServiceImpl implements ProductService{
                 System.out.println("Gagal, silahkan pilih ulang");
                 confirmation();
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             System.out.println("Input tidak valid. Masukkan angka!");
             processConfirm();
         }

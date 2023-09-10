@@ -13,7 +13,7 @@ public interface ProductService {
     void listBuy(String getSelect);
     void listQty(int result, int select);
     void reorders() throws IOException;
-    void confirmation();
+    void confirmation() ;
     void validConfirm();
     void dataOrder();
     int dataAmount(List<Integer> values);

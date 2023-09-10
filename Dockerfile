@@ -1,6 +1,8 @@
+# Gunakan image base dengan JRE
+FROM openjdk:8-jre-alpine
 
-FROM ubuntu/jre:8_edge
+# Menambahkan file JAR ke dalam container
+COPY //target/BinarChallenge-1.0-SNAPSHOT.jar /BinarChallenge2.jar
 
-EXPOSE 8080
-ADD /target/BinarChallenge-1.0.jar BinarChallenge-1.0.jar
-ENTRYPOINT ["java","-jar","BinarChallenge-1.0.jar"]
+# Perintah yang akan dijalankan saat container dimulai
+CMD ["java", "-jar", "/BinarChallenge2.jar"]

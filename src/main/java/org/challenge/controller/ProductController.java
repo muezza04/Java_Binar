@@ -7,7 +7,7 @@ import org.challenge.service.ProductService;
 public class ProductController {
 
     // Menampilkan menu, memproses menu, dan keluar dari aplikasi
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService)  {
         productService.showMenu();
         productService.processMenu();
         System.exit(0);
