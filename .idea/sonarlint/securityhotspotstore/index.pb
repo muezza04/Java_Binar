@@ -5,8 +5,6 @@ g
 .src/main/java/org/challenge/model/Product.java,9\7\97ab377fc71e33485c0d6d2e64760d86da51a8da
 m
 =src/main/java/org/challenge/repository/ProductRepository.java,2\2\229f9486cb21c99662123d0c07ad2a3e17fa7ea0
-k
-;src/main/java/org/challenge/service/ProductServiceImpl.java,2\c\2c55cc8c51a400dd157e3f092c2965abcc2e8ec5
 m
 =src/main/java/org/challenge/controller/ProductController.java,2\3\2308e1fa4880d6300a9a3b1742cbaa6d557373f7
 ]

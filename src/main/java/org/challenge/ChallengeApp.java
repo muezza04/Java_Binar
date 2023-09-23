@@ -10,8 +10,9 @@ public class ChallengeApp {
 
         ProductRepository productRepository = new ProductRepository();
         ProductService productService = new ProductServiceImpl(productRepository);
+
         ProductController productController = new ProductController(productService);
 
-        productController.toString();
+        productController.showControllerApp();
     }
 }

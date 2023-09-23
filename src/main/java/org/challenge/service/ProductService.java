@@ -1,27 +1,44 @@
 package org.challenge.service;
 
-import java.io.IOException;
 import java.util.List;
 
 public interface ProductService {
-    void dataMenu();
+    void MainMenu();
+
     void showMenu();
-    void validMenu() throws IOException;
-    void processMenu();
-    void listOrder(int results);
-    void processListOrder(int order);
-    void listBuy(String getSelect);
-    void listQty(int result, int select);
-    void reorders() throws IOException;
+
+    String priceFormatted(Integer data);
+
+    void validMenu();
+
+    Integer processMenu();
+
+    void menuOrder(int results);
+
+    Integer processMenuOrder(int order);
+
+    String listBuy(String getSelect);
+    boolean listQty(int result, int select);
+
+    void reorders();
+
     void confirmation() ;
+
     void validConfirm();
+
     void dataOrder();
+
     int dataAmount(List<Integer> values);
-    void processConfirm();
-    void payment() throws IOException;
+
+    Integer processConfirm();
+
+    void payment() ;
+
     void processPayment(StringBuilder result);
-    void outputPayment(StringBuilder data) throws IOException;
+
+    void outputPayment(StringBuilder data);
+
     void writeFile(String targetFile, String data);
+
     void readFile(String originFile);
-    String priceFormatted(int data);
 }

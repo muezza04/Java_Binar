@@ -9,5 +9,3 @@ m
 -src/main/java/org/challenge/ChallengeApp.java,0\d\0d6740b36ebae30e5034016dc2beb5e5273beaaf
 m
 =src/main/java/org/challenge/controller/ProductController.java,2\3\2308e1fa4880d6300a9a3b1742cbaa6d557373f7
-k
-;src/main/java/org/challenge/service/ProductServiceImpl.java,2\c\2c55cc8c51a400dd157e3f092c2965abcc2e8ec5

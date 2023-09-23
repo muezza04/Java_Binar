@@ -1,15 +1,20 @@
 package org.challenge.service;
 
+import lombok.NoArgsConstructor;
 import org.challenge.model.Product;
 import org.challenge.repository.ProductRepository;
 
 import java.io.*;
-import java.util.Arrays;
+import java.util.InputMismatchException;
 import java.util.List;
+import java.util.Optional;
+import java.util.Scanner;
+import java.util.stream.Stream;
 
+@NoArgsConstructor
 public class ProductServiceImpl implements ProductService{
     Product product = new Product();
-    BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+    Scanner inputScanner = new Scanner(System.in);
 
     // Konstruktor untuk menginisialisasi produk dari repositori
     public ProductServiceImpl(ProductRepository productRepository) {
@@ -18,39 +23,45 @@ public class ProductServiceImpl implements ProductService{
 
     // Metode untuk menginisialisasi produk dari repositori
     private void initializeProduct(ProductRepository productRepository) {
-        product.setListMenu(Arrays.asList(productRepository.getDataMenu()));
-        product.setListPrice(Arrays.asList(productRepository.getDataPrice()));
+        product.setListMenu(productRepository.getDataMenu());
+        product.setListPrice(productRepository.getDataPrice());
     }
 
-    // Menampilkan header menu
     @Override
-    public void dataMenu() {
+    public void MainMenu() {
+        System.out.println(product.getLINE());
+        System.out.println("Selamat datang di BinarFud");
+        System.out.println(product.getLINE());
+        System.out.println("Silahkan pilih makanan : ");
+        showMenu();
+        System.out.println("99. Pesan dan Bayar");
+        System.out.println("0. Keluar aplikasi");
+    }
+
+    // Show header menu
+    @Override
+    public void showMenu() {
         for (int i = 0; i < product.getListMenu().size(); i++) {
             String priceLine = (i == product.getListMenu().size() - 1) ? "\t\t | " : "\t | ";
             System.out.println((i + 1) + ". " + product.getListMenu().get(i) + priceLine + priceFormatted(product.getListPrice().get(i)));
         }
     }
 
+    // Mengformat harga menjadi string dengan pemisah ribuan
     @Override
-    public void showMenu() {
-        System.out.println(product.getTopLine());
-        System.out.println("Selamat datang di BinarFud");
-        System.out.println(product.getUnderline());
-        System.out.println("Silahkan pilih makanan : ");
-        dataMenu();
-        System.out.println("99. Pesan dan Bayar");
-        System.out.println("0. Keluar aplikasi");
+    public String priceFormatted(Integer data) {
+        return String.format("%,d", data);
     }
 
     @Override
-    public void validMenu() throws IOException {
+    public void validMenu() {
         System.out.print("Apakah Anda ingin keluar? (y/n): ");
-        String inputClose = reader.readLine().toLowerCase();
+        String result = inputScanner.nextLine().toLowerCase();
 
-        if (inputClose.equals("y")) {
+        if (result.equals("y")) {
             System.out.println("Terima kasih! Program keluar.");
             System.exit(0);
-        } else if (inputClose.equals("n")) {
+        } else if (result.equals("n")) {
             System.out.println("Silahkan memilih menu yang tersedia diatas!");
             processMenu();
         } else {
@@ -60,101 +71,105 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public void processMenu() {
+    public Integer processMenu() {
+        System.out.print("=> ");
+        int result = inputScanner.nextInt();
         try {
-            System.out.print("=> ");
-            String inputMenu = reader.readLine();
-            int result = Integer.parseInt(inputMenu);
-
             if (result >= 1 && result <= product.getListMenu().size()) {
-                listOrder(result - 1);
+                this.menuOrder(result - 1);
             } else if (result == 99) {
-                confirmation();
+                this.confirmation();
             } else if (result == 0) {
-                validMenu();
+                this.validMenu();
             } else {
-                throw new IOException();
+                throw new InputMismatchException();
             }
         } catch (Exception e) {
             System.out.println("Input tidak valid!");
-            processMenu();
+            inputScanner.nextLine();
+            this.processMenu();
         }
+        return result;
     }
 
     // Menampilkan pesanan dan harga
     @Override
-    public void listOrder(int resultsOrder) {
-        System.out.println(product.getTopLine());
+    public void menuOrder(int resultsOrder) {
+        System.out.println(product.getLINE());
         System.out.println("Berapa pesanan anda");
-        System.out.println(product.getUnderline());
+        System.out.println(product.getLINE()+"\n");
         System.out.println(product.getListMenu().get(resultsOrder) + "\t | "+product.getListPrice().get(resultsOrder));
         System.out.println("(input 0 untuk kembali)\n");
 
-        processListOrder(resultsOrder);
+        processMenuOrder(resultsOrder);
     }
 
     @Override
-    public void processListOrder(int order) {
+    public Integer processMenuOrder(int order) {
+        System.out.print("qty => ");
+        int result = inputScanner.nextInt();
         try {
-            System.out.print("qty => ");
-            String inputLiOr = reader.readLine();
-            int result = Integer.parseInt(inputLiOr);
             if (result == 0) {
-                showMenu();
-                processMenu();
+                this.MainMenu();
+                this.processMenu();
             } else {
-                listBuy(product.getListMenu().get(order));
+                this.listBuy(product.getListMenu().get(order));
                 product.getListQty().add(result);
-                listQty(result, order);
-                reorders();
+                this.listQty(result, order);
+
+                this.reorders();
             }
+
         } catch (Exception e) {
             System.out.println("Input tidak valid!");
-            processListOrder(order);
+            this.processMenuOrder(order);
         }
+
+        return result;
     }
 
     // Menambahkan pesanan ke daftar
     @Override
-    public void listBuy(String getSelect) {
-        product.getListSelect().add(getSelect);
+    public String listBuy(String getSelect) {
+        return String.valueOf(product.getListSelect().add(getSelect));
     }
 
     // Menambahkan jumlah harga pesanan
     @Override
-    public void listQty(int result, int select) {
+    public boolean listQty(int result, int select) {
         int i = result * product.getListPrice().get(select);
-        product.getListHarga().add(i);
+        return product.getListHarga().add(i);
     }
 
     @Override
-    public void reorders() throws IOException {
+    public void reorders() {
+        inputScanner.nextLine(); // Untuk menghilangkan data dari sebelumnya
         System.out.print("Apakah Anda ingin mesan lagi? (y/n): ");
-        String inputReorder = reader.readLine().toLowerCase();
+        String result = inputScanner.nextLine().toLowerCase();
 
-        if (inputReorder.equals("y")) {
+        if (result.equals("y")) {
             System.out.println("Silahkan memilih menu yang tersedia!");
-            showMenu();
-            processMenu();
-        } else if (inputReorder.equals("n")) {
+            this.MainMenu();
+            this.processMenu();
+        } else if (result.equals("n")) {
             System.out.println("Silahkan melanjutkan pembayaran!");
-            confirmation();
+            this.confirmation();
         } else {
             System.out.println("Masukkan tidak valid. Ketik 'y' untuk keluar atau 'n' untuk lanjut.");
-            reorders();
+            this.reorders();
         }
     }
 
     @Override
     public void confirmation() {
-        validConfirm();
+        this.validConfirm();
 
         // Menampilkan konfirmasi dan rincian pembayaran
-        System.out.println(product.getTopLine());
+        System.out.println(product.getLINE());
         System.out.println("Konfirmasi & Pembayaran");
-        System.out.println(product.getUnderline());
+        System.out.println(product.getLINE()+"\n");
 
-        dataOrder();
+        this.dataOrder();
 
         System.out.println("-------------------------------+");
 
@@ -166,17 +181,24 @@ public class ProductServiceImpl implements ProductService{
         System.out.println("2. Kembali ke menu utama");
         System.out.println("0. Keluar dari aplikasi");
 
-        processConfirm();
+        this.processConfirm();
     }
 
     // Memeriksa apakah ada pesanan yang dipilih sebelum konfirmasi
     @Override
     public void validConfirm() {
-        if (product.getListSelect().isEmpty() && product.getListQty().isEmpty() && product.getListHarga().isEmpty()){
+        boolean allListsEmpty = Stream.of(
+                        product.getListSelect(),
+                        product.getListQty(),
+                        product.getListHarga())
+                .allMatch(List::isEmpty);
+
+        if (allListsEmpty) {
             System.out.println("Anda belum memilih menu");
-            processMenu();
+            this.processMenu();
         }
     }
+
 
     @Override
     public void dataOrder() {
@@ -189,51 +211,51 @@ public class ProductServiceImpl implements ProductService{
     // Menghitung total nilai dari daftar integer
     @Override
     public int dataAmount(List<Integer> values) {
-        int total = 0;
-        for (int value : values) {
-            total += value;
-        }
-        return total;
+        int total = values.stream()
+                .mapToInt(Integer::intValue)
+                .sum();
+
+        return Optional.ofNullable(total).get();
     }
 
     @Override
-    public void processConfirm() {
+    public Integer processConfirm() {
+        System.out.print("=> ");
+        int result = inputScanner.nextInt();
         try {
-            System.out.print("=> ");
-            String inputConfirm = reader.readLine();
-            int result = Integer.parseInt(inputConfirm);
             if (result == 0) {
                 System.exit(0);
             } else if (result == 1) {
-                payment();
+                this.payment();
             } else if (result == 2) {
-                reorders();
+                this.reorders();
             } else  {
                 System.out.println("Gagal, silahkan pilih ulang");
-                confirmation();
+                this.confirmation();
             }
         } catch (Exception e) {
             System.out.println("Input tidak valid. Masukkan angka!");
-            processConfirm();
+            this.processConfirm();
         }
+        return result;
     }
 
     // Menyiapkan data pembayaran
     @Override
-    public void payment() throws IOException {
+    public void payment() {
         StringBuilder data = new StringBuilder();
         data.append("================================\n");
         data.append("BinarFud\n");
         data.append("================================\n\n");
         data.append("Terimakasih sudah memesan \ndi BinarFud\n\n");
         data.append("Dibawah ini adalah pesanan anda :\n\n");
-        processPayment(data);
+        this.processPayment(data);
         data.append("Pembayaran : BinarCash\n\n");
         data.append("================================\n");
         data.append("Simpan struk ini sebagai \nbukti pembayaran\n");
         data.append("================================");
 
-        outputPayment(data);
+        this.outputPayment(data);
     }
 
     @Override
@@ -248,15 +270,26 @@ public class ProductServiceImpl implements ProductService{
     }
 
     @Override
-    public void outputPayment(StringBuilder data) throws IOException {
+    public void outputPayment(StringBuilder data) {
+        inputScanner.nextLine();
         System.out.print("Masukkan nama file => ");
-        String result = reader.readLine();
+        String result = inputScanner.nextLine();
 
-        String locFile = "D:\\Aplication\\Running\\java\\BE_JAVA\\Binar\\BinarChallenge\\Challenge2\\src\\main\\resources\\";
+        try {
+            if (result.isEmpty() || result.equals(null)){
+                throw new NullPointerException();
+            }
+            // C:\Users\<nama_pengguna>\Downloads
+            String locFile = "D:\\Aplication\\Running\\java\\BE_JAVA\\Binar\\BinarChallenge\\Challenge3\\src\\main\\resources\\";
 
-        // Menulis data ke file dan menampilkan isi file yang telah ditulis
-        writeFile(locFile+result+".txt", data.toString());
-        readFile(locFile+result+".txt");
+            // Menulis data ke file dan menampilkan isi file yang telah ditulis
+            writeFile(locFile+result+".txt", data.toString());
+            readFile(locFile+result+".txt");
+
+        } catch (Exception e) {
+            System.out.println("Nama yang dimasukkan tidak boleh kosong\nTekan enter untuk mengulang kembali");
+            this.outputPayment(data);
+        }
     }
 
     @Override
@@ -296,11 +329,5 @@ public class ProductServiceImpl implements ProductService{
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    // Mengformat harga menjadi string dengan pemisah ribuan
-    @Override
-    public String priceFormatted(int data) {
-        return String.format("%,d", data);
     }
 }
