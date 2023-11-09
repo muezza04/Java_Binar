@@ -4,11 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import javax.persistence.*;
+import java.io.Serializable;
+import java.util.List;
 
 @Data
 @Builder
@@ -16,19 +16,24 @@ import javax.persistence.Table;
 @AllArgsConstructor
 @Entity
 @Table(name = "users")
-public class Users {
+public class Users implements Serializable {
 
     @Id
+    @GeneratedValue(generator = "UUID")
+    @GenericGenerator(
+            name = "UUID",
+            strategy = "org.hibernate.id.UUIDGenerator")
     @Column(name = "user_id")
     private String id;
 
-    @Column(name = "username", length = 25, unique = true)
+    @Column(length = 25, unique = true)
     private String username;
 
-    @Column(name = "email_address", length = 50)
+    @Column(name = "email_address", length = 50, unique = true)
     private String emailAddress;
 
-    @Column(name = "password", length = 25)
     private String password;
 
+    @OneToMany(mappedBy = "userId")
+    private List<Orders> orders;
 }

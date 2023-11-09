@@ -1,22 +1,19 @@
 package org.binaracademy.challenge4.controller;
 
 import org.binaracademy.challenge4.model.Users;
-import org.binaracademy.challenge4.service.UsersService;
+import org.binaracademy.challenge4.service.impl.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.util.InputMismatchException;
 import java.util.Scanner;
-import java.util.UUID;
 
 @Component
 public class UsersController {
 
-    @PostConstruct
-    public void init() {
-        this.showMenuUsers();
-    }
+//    @Autowired
+//    private MenuMainController menuMainController;
 
     @Autowired
     private UsersService usersService;
@@ -25,23 +22,41 @@ public class UsersController {
 
     public void showMenuUsers() {
         while (true) {
-            System.out.println("Welcome Menu Users!!\n" +
-                    "Silahkan Pilih Menu\n" +
-                    "1. Lihat semua Users\n" +
-                    "2. Add users\n" +
-                    "0. Keluar");
+            System.out.println("Berikut tampilan semua akun Users");
+            System.out.println("Username \t | \t Email \t | \t Password");
+            usersService.getAllUsers().forEach(users -> {
+                System.out.println(
+                        users.getUsername() + "\t - \t" +
+                                users.getEmailAddress() + "\t - \t" + users.getPassword());
+            });
+
+            System.out.println("1. Detail account");
+            System.out.println("2. Add users");
+            System.out.println("3. Update users");
+            System.out.println("4. Delete account");
+            System.out.println("99. Back menu main");
+            System.out.println("0. Out");
 
             System.out.print("=> ");
             try {
-                int pilihan = scanner.nextInt();
+                int choose = scanner.nextInt();
                 scanner.nextLine();
 
-                switch (pilihan) {
+                switch (choose) {
                     case 1:
-                        this.showAllUsers();
+                    this.showDetailUsers();
                         break;
                     case 2:
-                        this.showAddNewUsers();
+                        this.showAddUsers();
+                        break;
+                    case 3:
+                        this.showUpdateUsers();
+                        break;
+                    case 4:
+                        this.showDeleteUsers();
+                        break;
+                    case 99:
+//                        menuMainController.showMenuMain();
                         break;
                     case 0:
                         System.exit(0);
@@ -54,69 +69,67 @@ public class UsersController {
             }
         }
     }
-    public void showAllUsers() {
-        System.out.println("Berikut tampilan akun Users");
-        System.out.println("Username \t | \t Email \t | \t Password");
-        usersService.getAllUsers().forEach(users -> {
-            System.out.println(
-                    users.getUsername() + "\t - \t" +
-                            users.getEmailAddress() + "\t - \t" + users.getPassword());
-        });
 
-        System.out.println("1. Detail akun");
-        System.out.println("2. Add users");
-        System.out.println("0. Keluar");
-
-        System.out.print("=> ");
-        try {
-            int pilihan = scanner.nextInt();
-            scanner.nextLine();
-
-            switch (pilihan) {
-                case 1:
-                    System.out.print("nama username => ");
-                    String userDetail = scanner.nextLine();
-                    this.showDetailUsers(usersService.getUsersDetail(userDetail));
-                    break;
-                case 2:
-                    this.showAddNewUsers();
-                    break;
-                case 0:
-                    System.exit(0);
-                default:
-                    throw new InputMismatchException();
-            }
-        } catch (InputMismatchException e) {
-            System.out.println("Input Failed...");
-            scanner.nextLine();
-            this.showAllUsers();
-        }
-    }
-
-    public void showAddNewUsers() {
+    public void showAddUsers() {
         System.out.println("\n=====New Users=====");
-        System.out.print("new Username : ");
+        System.out.print("Username : ");
         String newUsername = scanner.nextLine();
-        System.out.print("new Email Address : ");
+        System.out.print("Email Address : ");
         String newEmail = scanner.nextLine();
-        System.out.print("new password : ");
+        System.out.print("Password : ");
         String newPassword = scanner.nextLine();
 
         Users newUser = Users.builder()
-                .id(UUID.randomUUID().toString())
                 .username(newUsername)
                 .emailAddress(newEmail)
                 .password(newPassword)
                 .build();
 
         usersService.addNewUsers(newUser);
-        System.out.println("\nUsers baru ditambahkan!");
+        System.out.println("Users New in Add!\n");
         this.showMenuUsers();
     }
 
-    public void showDetailUsers(Users user) {
-        System.out.println("\nUsername : " + user.getUsername());
+    public void showDetailUsers() {
+        System.out.print("Name username : ");
+        String userDetail = scanner.nextLine();
+
+        Users user = usersService.getUsersDetail(userDetail);
+        System.out.println("\nUsername : \t" + user.getUsername());
         System.out.println("Email Address : " + user.getEmailAddress());
-        System.out.println("Password : " + user.getPassword());
+        System.out.println("Password : \t" + user.getPassword() + "\n");
+
+        this.showMenuUsers();
+    }
+
+    public void showUpdateUsers() {
+        System.out.println("\n=====Update Users=====");
+        System.out.print("Name username which will update : ");
+        String usernameId = scanner.nextLine();
+        System.out.print("update Username : ");
+        String updateUsername = scanner.nextLine();
+        System.out.print("update Email Address : ");
+        String updateEmail = scanner.nextLine();
+        System.out.print("update password : ");
+        String updatePassword = scanner.nextLine();
+
+        Users updateUser = Users.builder()
+                .username(updateUsername)
+                .emailAddress(updateEmail)
+                .password(updatePassword)
+                .build();
+
+        usersService.updateUsers(updateUser ,usernameId);
+        System.out.println("Users update success!\n");
+        this.showMenuUsers();
+    }
+
+    public void showDeleteUsers() {
+        System.out.print("Username which is delete : ");
+        String userDelete = scanner.nextLine();
+
+        usersService.deleteByUsername(userDelete);
+        System.out.println("User delete is success!\n");
+        this.showMenuUsers();
     }
 }

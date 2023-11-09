@@ -4,19 +4,38 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.GenericGenerator;
 
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Orders {
+@Entity
+@Table(name = "orders")
+public class Orders implements Serializable {
 
+    @Id
+    @Column(name = "order_id")
     private Long orderId;
-    private Date order_time;
-    private String destination_address;
+
+    @Column(name = "order_time")
+    private Date orderTime;
+
+    @Column(name = "destination_address")
+    private String destinationAddress;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id")
     private Users userId;
-    private String complated;
+
+    private String completed;
+
+    @OneToMany(mappedBy = "orderId")
+    private List<OrdersDetail> ordersDetail;
 
 }

@@ -9,9 +9,5 @@ public class MainBinarFud {
 
 	public static void main(String[] args) {
 		SpringApplication.run(MainBinarFud.class, args);
-
-//		UsersController usersController = new UsersController();
-//
-//		usersController.ShowMenuUsers();
 	}
 }
