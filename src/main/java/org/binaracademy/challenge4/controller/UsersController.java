@@ -1,19 +1,18 @@
 package org.binaracademy.challenge4.controller;
 
+import org.binaracademy.challenge4.model.DTO.response.UsersResponse;
 import org.binaracademy.challenge4.model.Users;
 import org.binaracademy.challenge4.service.impl.UsersService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import javax.annotation.PostConstruct;
 import java.util.InputMismatchException;
+import java.util.List;
+import java.util.Optional;
 import java.util.Scanner;
 
 @Component
 public class UsersController {
-
-//    @Autowired
-//    private MenuMainController menuMainController;
 
     @Autowired
     private UsersService usersService;
@@ -26,14 +25,15 @@ public class UsersController {
             System.out.println("Username \t | \t Email \t | \t Password");
             usersService.getAllUsers().forEach(users -> {
                 System.out.println(
-                        users.getUsername() + "\t - \t" +
-                                users.getEmailAddress() + "\t - \t" + users.getPassword());
+                        users.getUsersUsername() + "\t - \t" +
+                                users.getUsersEmail() + "\t - \t" + users.getUsersPassword());
             });
 
             System.out.println("1. Detail account");
             System.out.println("2. Add users");
             System.out.println("3. Update users");
             System.out.println("4. Delete account");
+//            System.out.println("5. Page All user");
             System.out.println("99. Back menu main");
             System.out.println("0. Out");
 
@@ -54,6 +54,9 @@ public class UsersController {
                         break;
                     case 4:
                         this.showDeleteUsers();
+                        break;
+                    case 5:
+//                        this.showPageUsers(null);
                         break;
                     case 99:
 //                        menuMainController.showMenuMain();
@@ -94,10 +97,10 @@ public class UsersController {
         System.out.print("Name username : ");
         String userDetail = scanner.nextLine();
 
-        Users user = usersService.getUsersDetail(userDetail);
-        System.out.println("\nUsername : \t" + user.getUsername());
-        System.out.println("Email Address : " + user.getEmailAddress());
-        System.out.println("Password : \t" + user.getPassword() + "\n");
+        UsersResponse user = usersService.getUsersDetail(userDetail);
+        System.out.println("\nUsername : \t" + user.getUsersUsername());
+        System.out.println("Email Address : " + user.getUsersEmail());
+        System.out.println("Password : \t" + user.getUsersPassword() + "\n");
 
         this.showMenuUsers();
     }
@@ -131,5 +134,28 @@ public class UsersController {
         usersService.deleteByUsername(userDelete);
         System.out.println("User delete is success!\n");
         this.showMenuUsers();
+    }
+
+    public void showPageUsers(List<Users> userPage) {
+        System.out.println("Berikut tampilan semua akun Users");
+        System.out.println("Username \t | \t Email \t | \t Password");
+        userPage = Optional.ofNullable(userPage)
+                        .orElseGet(() -> usersService.getPageable(0));
+
+        userPage.forEach(users -> {
+            System.out.println(
+                    users.getUsername() + "\t - \t" +
+                            users.getEmailAddress() + "\t - \t" + users.getPassword());
+        });
+
+        System.out.print("Masukan no halaman yang ingin anda tuju, Ketik \"n\" jika anda ingin keluar => ");
+        try {
+            int choose = scanner.nextInt();
+            scanner.nextLine();
+            userPage = usersService.getPageable(choose);
+            this.showPageUsers(userPage);
+        } catch (InputMismatchException e) {
+            this.showMenuUsers();
+        }
     }
 }

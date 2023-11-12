@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import java.awt.print.Pageable;
 import java.util.List;
 
 @Repository
@@ -23,4 +24,8 @@ public interface UsersRepository extends JpaRepository<Users, String> {
     @Modifying
     @Query(nativeQuery = true, value = "delete from users u where u.username = :username")
     Integer deleteByUsername(@Param("username") String username);
+
+    @Modifying
+    @Query(nativeQuery = true, value = "select * from users")
+    List<Users> readUsersPage(Pageable pageable);
 }

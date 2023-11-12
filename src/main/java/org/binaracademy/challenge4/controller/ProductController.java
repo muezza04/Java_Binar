@@ -13,8 +13,6 @@ import java.util.Scanner;
 
 @Component
 public class ProductController {
-//    @Autowired
-//    private MenuMainController menuMainController;
 
     @Autowired
     private ProductService productService;
