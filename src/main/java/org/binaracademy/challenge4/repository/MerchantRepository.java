@@ -18,6 +18,11 @@ public interface MerchantRepository extends JpaRepository<Merchant, String> {
     List<Merchant> readMerchantOpen();
 
     @Modifying
+    @Query(nativeQuery = true, value = "insert into merchant (merchant_code, merchant_location, merchant_name ,merchant_open) " +
+            "values(:merchantCode , :merchantLoc, :merchantName, :merchantOpen)")
+    Integer postMerchant(@Param("merchantCode") String merchantCode, @Param("merchantLoc") String merchantLoc, @Param("merchantName") String merchantName, @Param("merchantOpen") String merchantOpen);
+
+    @Modifying
     @Query(nativeQuery = true, value = "update merchant set merchant_open= :merchantOpen where merchant_code = :merchantCode")
     Integer updateMerchantOpen(@Param("merchantOpen") String merchantOpen, @Param("merchantCode") String merchantCode);
 

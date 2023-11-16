@@ -1,14 +1,15 @@
 package org.binaracademy.challenge4.service.impl;
 
+import org.binaracademy.challenge4.model.DTO.MerchantResponse;
 import org.binaracademy.challenge4.model.Merchant;
 
 import java.util.List;
 
 public interface MerchantService {
 
-    List<Merchant> readMerchant();
+    List<MerchantResponse> readMerchant();
     List<Merchant> readMerchantOpen();
-    Boolean addMerchant (Merchant merchant);
+    Boolean addMerchant (MerchantResponse merchant);
     Boolean updateMerchantStatus(String merchantStatus, String merchantCode);
 
     //Optional

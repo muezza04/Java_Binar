@@ -1,5 +1,7 @@
 package org.binaracademy.challenge4.service;
 
+import lombok.extern.slf4j.Slf4j;
+import org.binaracademy.challenge4.model.DTO.MerchantResponse;
 import org.binaracademy.challenge4.model.Merchant;
 import org.binaracademy.challenge4.repository.MerchantRepository;
 import org.binaracademy.challenge4.service.impl.MerchantService;
@@ -10,17 +12,29 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
+@Slf4j
 public class MerchantServiceImpl implements MerchantService {
 
     @Autowired
     private MerchantRepository merchantRepository;
 
     @Override
-    public List<Merchant> readMerchant() {
+    @Transactional
+    public List<MerchantResponse> readMerchant() {
+        log.info("Starting view get All users");
         return Optional.ofNullable(merchantRepository)
-                .map(requestUsers -> merchantRepository.findAll())
+                .map(requestMerchant -> requestMerchant.findAll()
+                        .stream()
+                        .map(merchant -> MerchantResponse.builder()
+                                .merchantCode(merchant.getMerchantCode())
+                                .merchantName(merchant.getMerchantName())
+                                .merchantLocation(merchant.getMerchantLocation())
+                                .merchantOpen(merchant.getMerchantOpen())
+                                .build())
+                        .collect(Collectors.toList()))
                 .orElse(null);
     }
 
@@ -32,9 +46,15 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    public Boolean addMerchant(Merchant merchant) {
+    public Boolean addMerchant(MerchantResponse merchant) {
         return Optional.ofNullable(merchant)
-                .map(newUsers -> merchantRepository.save(merchant))
+//                .map(newMerchant -> MerchantResponse.builder()
+//                        .merchantCode(newMerchant.getMerchantCode())
+//                        .merchantName(newMerchant.getMerchantName())
+//                        .merchantLocation(newMerchant.getMerchantLocation())
+//                        .merchantOpen(newMerchant.getMerchantOpen())
+//                        .build())
+                .map(newMerchant -> merchantRepository.postMerchant(newMerchant.getMerchantCode(), newMerchant.getMerchantLocation(), newMerchant.getMerchantName(), newMerchant.getMerchantOpen()))
                 .map(Objects::nonNull)
                 .orElse(Boolean.FALSE);
     }
